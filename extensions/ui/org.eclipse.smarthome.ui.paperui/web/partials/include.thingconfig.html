@@ -1,0 +1,46 @@
+<div class="container" ng-if="thing.item">
+	<h3>Name and Groups</h3>
+
+	<div>
+		<md-input-container> <input
+			ng-model="thing.item.label"> </md-input-container>
+	</div>
+	<div ng-show="!thingType.bridge">
+		<md-checkbox ng-repeat="homeGroup in homeGroups"
+			ng-model="groupNames[homeGroup.name]" class="inline">{{homeGroup.label}}</md-checkbox>
+		<p ng-show="homeGroups.length == 0">
+			No groups defined yet.
+			<button class="md-button"
+				ng-click="navigateFromRoot('configuration/groups')">Add
+				Group</button>
+		</p>
+	</div>
+	<hr />
+</div>
+<div class="container" ng-if="needsBridge">
+	<h3>Bridge Selection</h3>
+	<div class="form-group">
+		<md-select placeholder="Select a Bridge" ng-model="thing.bridgeUID" ng-readonly="true"> <md-option
+			ng-value="bridge.UID" ng-repeat="bridge in bridges">{{bridge.item ? bridge.item.label + ' - ' : '' }}{{bridge.UID}}</md-option>
+		</md-select>
+	</div>
+	<hr />
+</div>
+<div class="container">
+	<h3>Configuration Parameters</h3>
+	<p>Configure parameters for the thing.</p>
+	<div class="row">
+		<div ng-repeat="parameter in thingType.configParameters">
+			<div class="parameter col-sm-6 col-xs-12">
+				<md-input-container> <label>{{parameter.label}}</label>
+				<input ng-model="thing.configuration[parameter.name]"
+					ng-required="parameter.required">
+				<p class="hint">
+					<small>{{parameter.description}}</small>
+				</p>
+				</md-input-container>
+			</div>
+			<div ng-if="$odd" class="clearfix"></div>
+		</div>
+	</div>
+</div>
