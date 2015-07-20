@@ -219,7 +219,6 @@ angular.module('SmartHomeManagerApp.controllers.configuration',
     $scope.groupNames = [];
 	
 	$scope.update = function(thing) {
-	    configService.convert(thing, $scope.thingType);
 		if(thing.item) {
 			for (var groupName in $scope.groupNames) {
 	            if($scope.groupNames[groupName]) {
@@ -262,6 +261,7 @@ angular.module('SmartHomeManagerApp.controllers.configuration',
             return thingType.UID === thingTypeUID;
         }, function(thingType) {
             $scope.thingType = thingType;
+            $scope.parameters = configService.getRenderingModel(thingType.configParameters);
             $scope.needsBridge = $scope.thingType.supportedBridgeTypeUIDs && $scope.thingType.supportedBridgeTypeUIDs.length > 0;
             if($scope.needsBridge) {
                 $scope.getBridges();

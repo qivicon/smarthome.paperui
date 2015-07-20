@@ -219,7 +219,6 @@ angular.module('SmartHomeManagerApp.controllers.setup',
                 thing.item.groupNames.push(groupName);
             }
         }
-	    configService.convert(thing, $scope.thingType)
 		thingSetupService.add(thing, function() {
 		    homeGroupRepository.setDirty(true);
 			toastService.showDefaultToast('Thing added');
@@ -250,6 +249,7 @@ angular.module('SmartHomeManagerApp.controllers.setup',
     	$scope.setTitle('Configure ' + thingType.label);
     	$scope.setHeaderText(thingType.description);
 		$scope.thingType = thingType;
+        $scope.parameters = configService.getRenderingModel(thingType.configParameters);
 		$scope.thing.UID = thingType.UID + ':' + generateUUID();
 		$scope.thing.item.label = thingType.label;
 		$scope.needsBridge = $scope.thingType.supportedBridgeTypeUIDs && $scope.thingType.supportedBridgeTypeUIDs.length > 0;

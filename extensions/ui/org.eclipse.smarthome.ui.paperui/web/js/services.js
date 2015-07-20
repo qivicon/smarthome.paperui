@@ -70,23 +70,56 @@ angular.module('SmartHomeManagerApp.services', []).config(function($httpProvider
 	};
 }).factory('configService', function() {
     return {
-        convert: function(thing, thingType, applyDefault) {
-            if(thingType && thingType.configParameters) {
-                for (var i = 0; i < thingType.configParameters.length; i++) {
-                    var parameter = thingType.configParameters[i];
-                    if(thing.configuration[parameter.name]) {
-                        if(parameter.type === 'TEXT') {
-                            // no conversation
-                        } else if(parameter.type === 'BOOLEAN') {
-                            thing.configuration[parameter.name] = new Boolean(thing.configuration[parameter.name]);
-                        } else if(parameter.type === 'INTEGER' || parameter.type === 'DECIMAL') {
-                            thing.configuration[parameter.name] = parseInt(thing.configuration[parameter.name]);
-                        } else {
-                            // no conversation
-                        }
+        getRenderingModel: function(configParameters) {
+            var parameters = [];
+            for (var i = 0; i < configParameters.length; i++) {
+                var parameter = configParameters[i];
+                if(parameter.type === 'TEXT') {
+                    if(parameter.options && parameter.options.length > 0) {
+                        parameters.push({
+                            name: parameter.name,
+                            type: parameter.type,
+                            label: parameter.label,
+                            description: parameter.description,
+                            element: 'select',
+                            defaultValue: parameter.defaultValue,
+                            options: parameter.options
+                        });
+                    } else {
+                        parameters.push({
+                            name: parameter.name,
+                            type: parameter.type,
+                            label: parameter.label,
+                            description: parameter.description,
+                            element: 'input',
+                            defaultValue: parameter.defaultValue,
+                            inputType: parameter.context === 'password' ? 'password' : 'text' 
+                        });
                     }
+                } else if(parameter.type === 'BOOLEAN') {
+                    parameters.push({
+                        name: parameter.name,
+                        type: parameter.type,
+                        label: parameter.label,
+                        description: parameter.description,
+                        element: 'switch',
+                        defaultValue: parameter.defaultValue
+                    });
+                } else if(parameter.type === 'INTEGER' || parameter.type === 'DECIMAL') {
+                    parameters.push({
+                        name: parameter.name,
+                        type: parameter.type,
+                        label: parameter.label,
+                        description: parameter.description,
+                        element: 'input',
+                        defaultValue: parameter.defaultValue,
+                        inputType: 'number'
+                    });
+                } else {
+                    // no conversation
                 }
             }
+            return parameters;
         },
         setDefaults: function(thing, thingType) {
             if(thingType && thingType.configParameters) {
