@@ -31,12 +31,20 @@ angular.module('SmartHomeManagerApp.controllers.configuration',
 		});
 	}
 	bindingRepository.getAll();
-}).controller('BindingInfoDialogController', function($scope, $mdDialog, bindingRepository, bindingId) {
+}).controller('BindingInfoDialogController', function($scope, $mdDialog, thingTypeRepository, bindingRepository, bindingId) {
 	$scope.binding = undefined;
 	bindingRepository.getOne(function(binding) {
 		return binding.id === bindingId;
 	}, function(binding) {
-		$scope.binding = binding;
+		 $scope.binding = binding;
+		 $scope.binding.thingTypes = [];
+		 thingTypeRepository.getAll(function(thingTypes) {
+		     $.each(thingTypes, function(index, thingType) {
+		         if(thingType.UID.split(':')[0] === binding.id) {
+		             $scope.binding.thingTypes.push(thingType);
+		         }
+	        });
+		 });
 	});
 	$scope.close = function() {
 		$mdDialog.hide();
