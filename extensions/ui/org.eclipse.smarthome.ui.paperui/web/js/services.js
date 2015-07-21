@@ -17,9 +17,11 @@ angular.module('SmartHomeManagerApp.services', []).config(function($httpProvider
 	var eventSrc;
 	
 	var initializeEventService = function() {
+	    console.log('Initializing event service.')
 	    eventSrc = new EventSource('/rest/events')
 	    eventSrc.addEventListener('error', function (event) {
 	        if (eventSrc.readyState === 2) { // CLOSED
+	            $log.debug('Event connection broken. Trying to reconnect in 5 seconds.');
 	            setTimeout(initializeEventService, 5000);
 	        }
     	}); 

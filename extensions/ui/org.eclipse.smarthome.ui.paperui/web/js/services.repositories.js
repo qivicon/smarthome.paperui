@@ -124,14 +124,23 @@ angular.module('SmartHomeManagerApp.services.repositories', []).factory('binding
 	eventService.onEvent('smarthome/things/*/status', function(topic, statusInfo) {
 		var thingUID = topic.split('/')[2];
 		var thing = repository.find(function(thing) {
-			return thing.UID === thingUID;
-		});
+            return thing.UID === thingUID;
+        });
 		if(thing) {
 			$rootScope.$apply( function (scope) {
 				thing.statusInfo = statusInfo;
 			});
 		}
 	});
+	eventService.onEvent('smarthome/things/*/removed', function(topic, thing) {
+	    var thingUID = thing.UID;
+        var thing = repository.find(function(thing) {
+            return thing.UID === thingUID;
+        });
+        $rootScope.$apply( function (scope) {
+            repository.remove(thing);
+        });
+    });
 	return repository;
 }).factory('homeGroupRepository', 
 		function($q, $rootScope, groupSetupService) {

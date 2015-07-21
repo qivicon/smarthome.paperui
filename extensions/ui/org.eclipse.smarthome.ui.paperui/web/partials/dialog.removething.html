@@ -1,0 +1,10 @@
+<md-dialog aria-label="Remove thing"> <md-content>
+<h2>Remove Thing {{thing.item ? thing.item.label : thing.UID}}</h2>
+<p>Would you like to remove the thing from the system?</p>
+<md-checkbox ng-model="forceRemove" ng-init="forceRemove = false">Force - Directly
+removes the thing without possible communication to the device</md-checkbox>
+<div class="md-actions" layout="row">
+    <md-button ng-click="close()">Cancel</md-button>
+    <md-button class="md-primary"
+        ng-click="remove(thing.UID, forceRemove)">Remove</md-button>
+</div></md-dialog>
