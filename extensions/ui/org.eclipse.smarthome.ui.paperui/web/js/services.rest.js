@@ -1,30 +1,38 @@
-angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', function($resource) {
-    return $resource('/rest/items', {}, {
+angular.module('SmartHomeManagerApp.services.rest', ['SmartHomeManagerApp.constants'])
+.config(function($httpProvider){
+    var accessToken = function getAccessToken() { return $('#authentication').data('access-token') }();
+    if (accessToken != '{{ACCESS_TOKEN}}') {
+        var authorizationHeader = function getAuthorizationHeader() { return 'Bearer ' + accessToken }();
+        $httpProvider.defaults.headers.common['Authorization'] = authorizationHeader;       
+    }
+})
+.factory('itemService', function($resource, restConfig) {
+    return $resource(restConfig.restPath + '/items', {}, {
         getAll : {
             method : 'GET',
             isArray: true,
-            url: '/rest/items?recursive=true'
+            url: restConfig.restPath + '/items?recursive=true'
         },
         getByName : {
             method : 'GET',
             params : {
                 bindingId : '@itemName'
             },
-            url : '/rest/items/:itemName'
+            url : restConfig.restPath + '/items/:itemName'
         },
         remove : {
             method : 'DELETE',
             params : {
                 itemName : '@itemName'
             },
-            url : '/rest/items/:itemName'
+            url : restConfig.restPath + '/items/:itemName'
         },
         create : {
             method : 'PUT',
             params : {
                 itemName : '@itemName'
             },
-            url : '/rest/items/:itemName',
+            url : restConfig.restPath + '/items/:itemName',
             headers : {
                 'Content-Type' : 'text/plain'
             }
@@ -34,7 +42,7 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
             params : {
                 itemName : '@itemName'
             },
-            url : '/rest/items/:itemName/state',
+            url : restConfig.restPath + '/items/:itemName/state',
             headers : {
                 'Content-Type' : 'text/plain'
             }
@@ -44,7 +52,7 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
             params : {
                 itemName : '@itemName'
             },
-            url : '/rest/items/:itemName',
+            url : restConfig.restPath + '/items/:itemName',
             headers : {
                 'Content-Type' : 'text/plain'
             }
@@ -55,7 +63,7 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
                 itemName : '@itemName',
                 memberItemName : '@memberItemName'
             },
-            url : '/rest/items/:itemName/members/:memberItemName'
+            url : restConfig.restPath + '/items/:itemName/members/:memberItemName'
         },
         removeMember : {
             method : 'DELETE',
@@ -63,7 +71,7 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
                 itemName : '@itemName',
                 memberItemName : '@memberItemName'
             },
-            url : '/rest/items/:itemName/members/:memberItemName'
+            url : restConfig.restPath + '/items/:itemName/members/:memberItemName'
         },
         addTag : {
             method : 'PUT',
@@ -71,7 +79,7 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
                 itemName : '@itemName',
                 tag : '@tag'
             },
-            url : '/rest/items/:itemName/tags/:tag'
+            url : restConfig.restPath + '/items/:itemName/tags/:tag'
         },
         removeTag : {
             method : 'DELETE',
@@ -79,18 +87,18 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
                 itemName : '@itemName',
                 tag : '@tag'
             },
-            url : '/rest/items/:itemName/tags/:tag'
+            url : restConfig.restPath + '/items/:itemName/tags/:tag'
         }
     });
-}).factory('bindingService', function($resource) {
-    return $resource('/rest/bindings', {}, {
+}).factory('bindingService', function($resource, restConfig) {
+    return $resource(restConfig.restPath + '/bindings', {}, {
         getAll : {
             method : 'GET',
             isArray : true
         },
     });
-}).factory('inboxService', function($resource) {
-    return $resource('/rest/inbox', {}, {
+}).factory('inboxService', function($resource, restConfig) {
+    return $resource(restConfig.restPath + '/inbox', {}, {
         getAll : {
             method : 'GET',
             isArray : true
@@ -100,7 +108,7 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
             params : {
                 thingUID : '@thingUID'
             },
-            url : '/rest/inbox/:thingUID/approve',
+            url : restConfig.restPath + '/inbox/:thingUID/approve',
         	headers : {
                 'Content-Type' : 'text/plain'
             }
@@ -110,25 +118,25 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
             params : {
                 thingUID : '@thingUID'
             },
-            url : '/rest/inbox/:thingUID/ignore'
+            url : restConfig.restPath + '/inbox/:thingUID/ignore'
         },
         unignore : {
             method : 'POST',
             params : {
                 thingUID : '@thingUID'
             },
-            url : '/rest/inbox/:thingUID/unignore'
+            url : restConfig.restPath + '/inbox/:thingUID/unignore'
         },
         remove : {
             method : 'DELETE',
             params : {
                 thingUID : '@thingUID'
             },
-            url : '/rest/inbox/:thingUID'
+            url : restConfig.restPath + '/inbox/:thingUID'
         }
     })
-}).factory('discoveryService', function($resource) {
-    return $resource('/rest/discovery', {}, {
+}).factory('discoveryService', function($resource, restConfig) {
+    return $resource(restConfig.restPath + '/discovery', {}, {
         getAll : {
             method : 'GET',
             isArray : true
@@ -138,11 +146,11 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
             params : {
                 bindingId : '@bindingId'
             },
-            url : '/rest/discovery/bindings/:bindingId/scan'
+            url : restConfig.restPath + '/discovery/bindings/:bindingId/scan'
         }
     });
-}).factory('thingTypeService', function($resource) {
-    return $resource('/rest/thing-types', {}, {
+}).factory('thingTypeService', function($resource, restConfig) {
+    return $resource(restConfig.restPath + '/thing-types', {}, {
         getAll : {
             method : 'GET',
             isArray : true
@@ -152,11 +160,11 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
             params : {
                 bindingId : '@thingTypeUID'
             },
-            url : '/rest/thing-types/:thingTypeUID'
+            url : restConfig.restPath + '/thing-types/:thingTypeUID'
         }
     });
-}).factory('linkService', function($resource) {
-    return $resource('/rest/links', {}, {
+}).factory('linkService', function($resource, restConfig) {
+    return $resource(restConfig.restPath + '/links', {}, {
         getAll : {
             method : 'GET',
             isArray : true
@@ -167,7 +175,7 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
                 itemName : '@itemName',
                 channelUID : '@channelUID'
             },
-            url : '/rest/links/:itemName/:channelUID'
+            url : restConfig.restPath + '/links/:itemName/:channelUID'
         },
         unlink : {
             method : 'DELETE',
@@ -175,11 +183,11 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
                 itemName : '@itemName',
                 channelUID : '@channelUID'
             },
-            url : '/rest/links/:itemName/:channelUID'
+            url : restConfig.restPath + '/links/:itemName/:channelUID'
         }
     });
-}).factory('thingService', function($resource) {
-    return $resource('/rest/things', {}, {
+}).factory('thingService', function($resource, restConfig) {
+    return $resource(restConfig.restPath + '/things', {}, {
         getAll : {
             method : 'GET',
             isArray : true
@@ -189,18 +197,18 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
             params : {
                 bindingId : '@thingUID'
             },
-            url : '/rest/things/:thingUID'
+            url : restConfig.restPath + '/things/:thingUID'
         },
         remove : {
             method : 'DELETE',
             params : {
                 thingUID : '@thingUID'
             },
-            url : '/rest/things/:thingUID'
+            url : restConfig.restPath + '/things/:thingUID'
         },
         add : {
             method : 'POST',
-            url : '/rest/things',
+            url : restConfig.restPath + '/things',
             headers : {
                 'Content-Type' : 'application/json'
             }
@@ -210,7 +218,7 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
             params : {
                 thingUID : '@thingUID'
             },
-            url : '/rest/things/:thingUID',
+            url : restConfig.restPath + '/things/:thingUID',
             headers : {
                 'Content-Type' : 'application/json'
             }
@@ -221,7 +229,7 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
                 thingUID : '@thingUID',
                 channelId : '@channelId'    
             },
-            url : '/rest/things/:thingUID/channels/:channelId/link',
+            url : restConfig.restPath + '/things/:thingUID/channels/:channelId/link',
             headers : {
                 'Content-Type' : 'text/plain'
             }
@@ -232,11 +240,11 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
                 thingUID : '@thingUID',
                 channelId : '@channelId'    
             },
-            url : '/rest/things/:thingUID/channels/:channelId/link',
+            url : restConfig.restPath + '/things/:thingUID/channels/:channelId/link',
         }
     });
-}).factory('thingSetupService', function($resource) {
-    return $resource('/rest/setup/things', {}, {
+}).factory('thingSetupService', function($resource, restConfig) {
+    return $resource(restConfig.restPath + '/setup/things', {}, {
         add : {
             method : 'POST',
             headers : {
@@ -258,21 +266,21 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
             params : {
                 thingUID : '@thingUID'
             },
-            url : '/rest/setup/things/:thingUID'
+            url : restConfig.restPath + '/setup/things/:thingUID'
         },
         enableChannel : {
             method : 'PUT',
             params : {
                 channelUID : '@channelUID'
             },
-            url : '/rest/setup/things/channels/:channelUID'
+            url : restConfig.restPath + '/setup/things/channels/:channelUID'
         },
         disableChannel : {
             method : 'DELETE',
             params : {
                 channelUID : '@channelUID'
             },
-            url : '/rest/setup/things/channels/:channelUID'
+            url : restConfig.restPath + '/setup/things/channels/:channelUID'
         },
         setLabel : {
             method : 'PUT',
@@ -282,7 +290,7 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
             headers : {
                 'Content-Type' : 'text/plain'
             },
-            url : '/rest/setup/labels/:thingUID'
+            url : restConfig.restPath + '/setup/labels/:thingUID'
         },
         setGroups : {
             method : 'PUT',
@@ -292,11 +300,11 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
             headers : {
                 'Content-Type' : 'application/json'
             },
-            url : '/rest/setup/things/:thingUID/groups'
+            url : restConfig.restPath + '/setup/things/:thingUID/groups'
         }
     });
-}).factory('groupSetupService', function($resource) {
-    return $resource('/rest/setup/groups', {}, {
+}).factory('groupSetupService', function($resource, restConfig) {
+    return $resource(restConfig.restPath + '/setup/groups', {}, {
     	add : {
             method : 'POST',
             headers : {
@@ -308,7 +316,7 @@ angular.module('SmartHomeManagerApp.services.rest', []).factory('itemService', f
             params : {
                 itemName : '@itemName'
             },
-            url : '/rest/setup/groups/:itemName'
+            url : restConfig.restPath + '/setup/groups/:itemName'
         },
         getAll: {
         	method : 'GET',

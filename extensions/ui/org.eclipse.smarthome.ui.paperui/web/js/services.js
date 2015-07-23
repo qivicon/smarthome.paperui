@@ -1,4 +1,4 @@
-angular.module('SmartHomeManagerApp.services', []).config(function($httpProvider){
+angular.module('SmartHomeManagerApp.services', ['SmartHomeManagerApp.constants']).config(function($httpProvider){
     var language = localStorage.getItem('language');
     if(language) {
         $httpProvider.defaults.headers.common['Accept-Language'] = language;
@@ -11,13 +11,13 @@ angular.module('SmartHomeManagerApp.services', []).config(function($httpProvider
 			}
 		};
 	});
-}).factory('eventService', function($resource, $log) {
+}).factory('eventService', function($resource, $log, restConfig) {
 	
 	var callbacks = [];
 	var eventSrc;
 	
 	var initializeEventService = function() {
-	    eventSrc = new EventSource('/rest/events')
+	    eventSrc = new EventSource(restConfig.eventPath)
 	    eventSrc.addEventListener('error', function (event) {
 	        if (eventSrc.readyState === 2) { // CLOSED
 	            setTimeout(initializeEventService, 5000);
@@ -42,7 +42,6 @@ angular.module('SmartHomeManagerApp.services', []).config(function($httpProvider
 		}
 	};
 }).factory('toastService', function($mdToast, $rootScope) {
-	var eventSrc = new EventSource('/rest/events');    
 	return new function() {
 	    var self = this;
 		this.showToast = function(id, text, actionText, actionUrl) {

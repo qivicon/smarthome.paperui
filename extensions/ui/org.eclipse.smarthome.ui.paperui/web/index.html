@@ -48,6 +48,7 @@
 </head>
 
 <body ng-controller="BodyController">
+    <div id="authentication" data-access-token="{{ACCESS_TOKEN}}"></div>
 	<div ng-include="'partials/include.extension.html'"></div>
 	<nav class="menu slide-menu-left" ng-controller="NavController">
 		<div class="top clickable" ng-click="navigateToRoot()">
@@ -122,6 +123,7 @@
 
 	<!-- custom js files -->
 	<script src="js/app.js"></script>
+    <script src="js/constants.js"></script>
 	<script src="js/services.js"></script>
 	<script src="js/services.rest.js"></script>
 	<script src="js/services.repositories.js"></script>
